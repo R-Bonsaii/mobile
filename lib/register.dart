@@ -1,43 +1,32 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'dart:math';
-
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class login extends StatefulWidget {
-  final VoidCallback onClickedSignUp;
+class signup extends StatefulWidget {
+  final VoidCallback onClickedSignIn;
 
-  const login({
+  const signup({
     Key? key,
-    required this.onClickedSignUp,
+    required this.onClickedSignIn,
   }) : super(key: key);
 
   @override
-  _loginState createState() => _loginState();
+  State<signup> createState() => _signupState();
 }
 
-class _loginState extends State<login> {
+class _signupState extends State<signup> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-
-    super.dispose();
-  }
-
-  Future signIn() async {
+  Future signUp() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text.trim(),
           password: passwordController.text.trim());
-    } catch (e) {
-      print("Error ${e.toString()}");
+    } on FirebaseAuthException catch (e) {
+      print(e);
     }
   }
 
@@ -46,8 +35,8 @@ class _loginState extends State<login> {
     TextEditingController _emailController = TextEditingController();
     TextEditingController _passwordController = TextEditingController();
 
-    return MaterialApp(
-      home: SingleChildScrollView(
+    return Scaffold(
+      body: SingleChildScrollView(
         child: Container(
           width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.all(8),
@@ -116,9 +105,9 @@ class _loginState extends State<login> {
                   height: 50,
                   child: InkWell(
                     splashColor: Colors.white,
-                    onTap: () => signIn(),
+                    onTap: () => signUp(),
                     child: Center(
-                      child: Text("Masuk",
+                      child: Text("Buat Akun",
                           style: TextStyle(fontSize: 20, color: Colors.white)),
                     ),
                   ),
@@ -126,17 +115,6 @@ class _loginState extends State<login> {
               ),
               SizedBox(
                 height: 20,
-              ),
-              RichText(
-                text: TextSpan(
-                    style: TextStyle(color: Color.fromARGB(255, 241, 12, 12)),
-                    text: 'Belum punya Akun?  ',
-                    children: [
-                      TextSpan(
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = widget.onClickedSignUp,
-                          text: 'Sign Up')
-                    ]),
               ),
             ],
           ),
